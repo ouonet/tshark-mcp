@@ -47,19 +47,10 @@ For reliable usage, prefer one of the two options below.
 
 #### Option A (recommended after publishing): run installed command
 
-Add the following to your MCP client configuration:
+Use the key for your client:
 
-```json
-{
-  "servers": {
-    "tshark-mcp": {
-      "type": "stdio",
-      "command": "uv",
-      "args": ["tool", "run", "tshark-mcp"]
-    }
-  }
-}
-```
+- VS Code MCP: `servers`
+- Claude Desktop: `mcpServers`
 
 Ready-to-use copy templates:
 
@@ -67,7 +58,7 @@ Ready-to-use copy templates:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "tshark-mcp": {
       "type": "stdio",
       "command": "uv",
@@ -93,6 +84,8 @@ Ready-to-use copy templates:
 
 #### Option B (source checkout): pin project path explicitly
 
+VS Code MCP example:
+
 ```json
 {
   "servers": {
@@ -105,11 +98,44 @@ Ready-to-use copy templates:
 }
 ```
 
-To use a custom TShark path pass it via `env`:
+Claude Desktop example:
+
+```json
+{
+  "mcpServers": {
+    "tshark-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "C:/path/to/tshark-mcp", "server.py"]
+    }
+  }
+}
+```
+
+To use a custom TShark path pass it via `env`.
+
+VS Code MCP example:
 
 ```json
 {
   "servers": {
+    "tshark-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["tool", "run", "tshark-mcp"],
+      "env": {
+        "TSHARK_PATH": "C:\\Program Files\\Wireshark\\tshark.exe"
+      }
+    }
+  }
+}
+```
+
+Claude Desktop example:
+
+```json
+{
+  "mcpServers": {
     "tshark-mcp": {
       "type": "stdio",
       "command": "uv",
