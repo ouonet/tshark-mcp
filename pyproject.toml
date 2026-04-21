@@ -4,9 +4,35 @@ version = "0.1.0"
 description = "MCP server for using TShark to analyze network packets"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Neo" },
+]
+keywords = ["mcp", "tshark", "wireshark", "pcap", "network-analysis", "ss7"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet",
+    "Topic :: System :: Networking :: Monitoring",
+]
 dependencies = [
     "mcp[cli]>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ouonet/tshark-mcp"
+Repository = "https://github.com/ouonet/tshark-mcp"
+Issues = "https://github.com/ouonet/tshark-mcp/issues"
+
+[project.scripts]
+tshark-mcp = "server:main"
 
 [build-system]
 requires = ["setuptools"]

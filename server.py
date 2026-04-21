@@ -259,8 +259,13 @@ def run_tshark_command(command_args: str) -> str:
         The output of the tshark command
     """
     try:
-        safe_args = command_args.replace('\\', '\\\\')
-        result = _run(*shlex.split(safe_args), timeout=30)
+        # On Windows, use non-posix splitting to preserve backslashes in paths.
+        split_args = shlex.split(command_args, posix=(os.name != "nt"))
+        split_args = [
+            arg[1:-1] if len(arg) >= 2 and arg[0] == arg[-1] and arg[0] in ('"', "'") else arg
+            for arg in split_args
+        ]
+        result = _run(*split_args, timeout=30)
         return result.stdout if result.returncode == 0 else f"Error: {result.stderr}"
     except subprocess.TimeoutExpired:
         return "Error: Command timed out"
@@ -832,9 +837,11 @@ def _get_process_connections(pid: int) -> tuple[set[int], set[str]]:
                 ["ss", "-tnup"],
                 capture_output=True, text=True, timeout=10,
             )
-            for line in r.stdout.splitlines():
-                if f"pid={pid}," not in line:
-                    continue
+            lines = [ln for ln in r.stdout.splitlines() if ln.strip() and not ln.startswith("State")]
+            pid_lines = [ln for ln in lines if f"pid={pid}" in ln]
+            target_lines = pid_lines if pid_lines else lines
+
+            for line in target_lines:
                 parts = line.split()
                 if len(parts) < 5:
                     continue
@@ -1730,9 +1737,10 @@ def merge_pcap_files(
 
     tshark_path = Path(_TSHARK)
     if tshark_path.is_absolute():
-        mergecap = str(tshark_path.parent / "mergecap")
+        mergecap_name = "mergecap.exe" if sys.platform == "win32" else "mergecap"
+        mergecap = str(tshark_path.parent / mergecap_name)
     else:
-        mergecap = "mergecap"
+        mergecap = "mergecap.exe" if sys.platform == "win32" else "mergecap"
 
     try:
         merge_result = subprocess.run(
@@ -1770,5 +1778,10 @@ def merge_pcap_files(
         return f"Error: {str(e)}"
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the MCP server using stdio transport."""
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

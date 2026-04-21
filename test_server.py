@@ -156,6 +156,12 @@ class TestRunTsharkCommand:
     def test_timeout(self, mock_run):
         assert "timed out" in run_tshark_command("-D")
 
+    @patch("server.os.name", "nt")
+    @patch(PATCH, return_value=_ok("ok"))
+    def test_windows_path_preserved(self, mock_run):
+        run_tshark_command('-r "C:\\captures\\a.pcap" -Y "http.request"')
+        mock_run.assert_called_once_with("-r", "C:\\captures\\a.pcap", "-Y", "http.request", timeout=30)
+
 
 # ---------------------------------------------------------------------------
 # analyze_pcap_file
@@ -1345,3 +1351,25 @@ class TestMergePcapFiles:
         f.write_bytes(b"x")
         result = merge_pcap_files(str(f), str(tmp_path / "out.pcap"))
         assert "Error" in result
+
+    @patch("server._run", return_value=_ok("summary"))
+    @patch("server.subprocess.run")
+    @patch("server.sys.platform", "win32")
+    @patch("server._TSHARK", r"C:\\Program Files\\Wireshark\\tshark.exe")
+    def test_windows_uses_mergecap_exe(self, mock_subproc, mock_tshark_run, tmp_path):
+        f1 = tmp_path / "a.pcap"
+        f2 = tmp_path / "b.pcap"
+        f1.write_bytes(b"x")
+        f2.write_bytes(b"x")
+        out = tmp_path / "merged.pcap"
+        out.write_bytes(b"x")
+
+        ok = MagicMock()
+        ok.returncode = 0
+        ok.stdout = "merged"
+        ok.stderr = ""
+        mock_subproc.return_value = ok
+
+        merge_pcap_files(f"{f1},{f2}", str(out))
+        cmd = [str(a) for a in mock_subproc.call_args[0][0]]
+        assert any("mergecap.exe" in part for part in cmd)

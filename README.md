@@ -34,6 +34,11 @@ export TSHARK_PATH=/opt/wireshark/bin/tshark
 
 ### MCP client (Claude Desktop / VS Code)
 
+`uv run server.py` works only when the current working directory is the project root.
+For reliable usage, prefer one of the two options below.
+
+#### Option A (recommended after publishing): run installed command
+
 Add the following to your MCP client configuration:
 
 ```json
@@ -42,7 +47,51 @@ Add the following to your MCP client configuration:
     "tshark-mcp": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "server.py"]
+      "args": ["tool", "run", "tshark-mcp"]
+    }
+  }
+}
+```
+
+Ready-to-use copy templates:
+
+- Claude Desktop (published package)
+
+```json
+{
+  "servers": {
+    "tshark-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["tool", "run", "tshark-mcp"]
+    }
+  }
+}
+```
+
+- VS Code MCP (published package)
+
+```json
+{
+  "servers": {
+    "tshark-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["tool", "run", "tshark-mcp"]
+    }
+  }
+}
+```
+
+#### Option B (source checkout): pin project path explicitly
+
+```json
+{
+  "servers": {
+    "tshark-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "C:/path/to/tshark-mcp", "server.py"]
     }
   }
 }
@@ -56,7 +105,7 @@ To use a custom TShark path pass it via `env`:
     "tshark-mcp": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "server.py"],
+      "args": ["tool", "run", "tshark-mcp"],
       "env": {
         "TSHARK_PATH": "C:\\Program Files\\Wireshark\\tshark.exe"
       }
@@ -68,10 +117,11 @@ To use a custom TShark path pass it via `env`:
 ## Running the server manually
 
 ```bash
-python server.py
-
-# Or with uv
+# If running from source checkout
 uv run server.py
+
+# If installed as a tool/package
+uv tool run tshark-mcp
 ```
 
 ---
@@ -418,3 +468,15 @@ uv add --dev pytest
 # Run tests
 uv run python -m pytest test_server.py -v
 ```
+
+## Project Policies
+
+- License: see [LICENSE](LICENSE)
+- Contributing guide: see [CONTRIBUTING.md](CONTRIBUTING.md)
+- Code of conduct: see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Security policy: see [SECURITY.md](SECURITY.md)
+
+## Release
+
+- One-command pre-release check: `uv run python scripts/release_check.py`
+- Versioning and release notes template: see [RELEASE.md](RELEASE.md)
