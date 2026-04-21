@@ -16,9 +16,45 @@ from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-# Allow overriding the tshark executable path via environment variable.
-# Example: set TSHARK_PATH=C:\Program Files\Wireshark\tshark.exe
-_TSHARK = os.environ.get("TSHARK_PATH", "tshark")
+
+def _find_tshark() -> str:
+    """
+    Find tshark executable by checking:
+    1. TSHARK_PATH environment variable (if set)
+    2. Default installation paths by OS
+    3. System PATH
+    """
+    # 1. Check environment variable
+    if "TSHARK_PATH" in os.environ:
+        return os.environ["TSHARK_PATH"]
+
+    # 2. Check platform-specific default paths
+    if sys.platform == "win32":
+        candidates = [
+            r"C:\Program Files\Wireshark\tshark.exe",
+            r"C:\Program Files (x86)\Wireshark\tshark.exe",
+        ]
+    elif sys.platform == "darwin":  # macOS
+        candidates = [
+            "/usr/local/bin/tshark",
+            "/opt/homebrew/bin/tshark",
+        ]
+    else:  # Linux and other Unix-like systems
+        candidates = [
+            "/usr/bin/tshark",
+            "/usr/sbin/tshark",
+            "/usr/local/bin/tshark",
+        ]
+
+    for path in candidates:
+        if Path(path).exists():
+            return path
+
+    # 3. Fallback to 'tshark' (rely on system PATH)
+    return "tshark"
+
+
+_TSHARK = _find_tshark()
 _NOT_FOUND_MSG = (
     f"Error: TShark not found at '{_TSHARK}'. "
     "Install Wireshark/TShark or set the TSHARK_PATH environment variable."

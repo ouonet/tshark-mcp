@@ -10,19 +10,27 @@ An MCP (Model Context Protocol) server that exposes TShark as tools for AI-assis
 
 ## Installation
 
+This MCP server can be installed via your package manager and configured in your MCP client.
+
 ```bash
 # Using uv (recommended)
-uv pip install -e .
+uv pip install tshark-mcp
 
 # Or pip
-pip install -e .
+pip install tshark-mcp
 ```
 
 ## Configuration
 
 ### TShark path
 
-By default the server looks for `tshark` on `PATH`. If TShark is installed in a non-standard location, set the `TSHARK_PATH` environment variable:
+The server automatically detects TShark in common installation locations:
+
+- **Windows**: `C:\Program Files\Wireshark\tshark.exe`, `C:\Program Files (x86)\Wireshark\tshark.exe`
+- **macOS**: `/usr/local/bin/tshark`, `/opt/homebrew/bin/tshark`
+- **Linux**: `/usr/bin/tshark`, `/usr/sbin/tshark`, `/usr/local/bin/tshark`
+
+If TShark is installed in a non-standard location or auto-detection fails, set the `TSHARK_PATH` environment variable:
 
 ```bash
 # Windows
@@ -114,14 +122,21 @@ To use a custom TShark path pass it via `env`:
 }
 ```
 
-## Running the server manually
+## Development
+
+To contribute or modify the server, clone the repository and set up the development environment:
 
 ```bash
-# If running from source checkout
+# Clone and setup
+git clone <repository-url>
+cd tshark-mcp
+uv sync
+
+# Run the server during development
 uv run server.py
 
-# If installed as a tool/package
-uv tool run tshark-mcp
+# Run tests
+uv run pytest test_server.py
 ```
 
 ---
