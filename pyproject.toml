@@ -34,6 +34,9 @@ Issues = "https://github.com/ouonet/tshark-mcp/issues"
 [project.scripts]
 tshark-mcp = "server:main"
 
+[tool.setuptools]
+py-modules = ["server"]
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
