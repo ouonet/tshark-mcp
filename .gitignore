@@ -64,3 +64,6 @@ env/
 *.log
 node_modules/
 .tmp
+.serena
+.claude
+memory
