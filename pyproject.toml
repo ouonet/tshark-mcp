@@ -1,0 +1,18 @@
+[project]
+name = "tshark-mcp"
+version = "0.1.0"
+description = "MCP server for using TShark to analyze network packets"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
